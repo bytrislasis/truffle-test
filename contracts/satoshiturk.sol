@@ -16,6 +16,9 @@ contract satoshiturk {
   uint public totalInvest;
   uint public limit = 5;
   uint public yatirmalimiti = 1*10**18;
+  uint public adminPay;
+
+
 
   event Yatirma(address indexed adres, uint amount);
   event Kazanan(address indexed adres, uint amount);
@@ -43,8 +46,12 @@ contract satoshiturk {
   }
 
   function deposit () payable public {
+
     require(msg.value >= yatirmalimiti,"Minimum 1 Ethereum ve BNB");
     require(msg.sender != address(0));
+
+    uint adminKazanci = yuzdeHesapla(msg.value,200);
+
 
     Player memory p = Player({
     player : msg.sender,
@@ -54,7 +61,8 @@ contract satoshiturk {
     players.push(p);
 
 
-    totalAmount += msg.value;
+    totalAmount += msg.value-adminKazanci;
+    adminPay += adminKazanci;
     totalInvest++;
 
     emit Yatirma(msg.sender,msg.value);
@@ -73,7 +81,12 @@ contract satoshiturk {
   }
 
   function winner (address _addres, uint _amount) internal {
+
     payable(_addres).transfer(_amount);
+
+    address adminAddress = 0xB9b9B078e7D532A8d75184E17e9Cb45302686CAF;
+    payable(adminAddress).transfer(adminPay);
+
     emit Kazanan(_addres,_amount);
   }
 
@@ -101,6 +114,10 @@ contract satoshiturk {
     return yatirmalimiti;
   }
 
+  function yuzdeHesapla(uint _amount, uint yuzde) internal pure returns(uint){
+    return _amount * yuzde / 10000;
+  }
+
+  }
 
 
-}

@@ -1,6 +1,5 @@
 const satoshiturk = artifacts.require("../contracts/satoshiturk.sol");
 
-
 contract("satoshiturk", function (accounts) {
 
   it("Limit Değişikliği", async function () {
@@ -40,7 +39,7 @@ contract("satoshiturk", function (accounts) {
   it("Cekilise Katıl", async function () {
     let instance = await satoshiturk.deployed();
     for (let i = 0; i < accounts.length; i++) {
-     await instance.deposit({ from: accounts[i], value: 2*10**18 });
+      await instance.deposit({ from: accounts[i], value: 2*10**18 });
       web3.eth.getBalance(instance.address).then(console.log);
     }
   });
