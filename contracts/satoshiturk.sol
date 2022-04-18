@@ -14,11 +14,8 @@ contract satoshiturk {
 
   uint public totalAmount;
   uint public totalInvest;
-  uint public limit = 5;
-  uint public yatirmalimiti = 1*10**18;
-  uint public adminPay;
-
-
+  uint public limit;
+  uint public yatirmalimiti;
 
   event Yatirma(address indexed adres, uint amount);
   event Kazanan(address indexed adres, uint amount);
@@ -26,6 +23,9 @@ contract satoshiturk {
 
   constructor (){
     owner = msg.sender;
+    limit = 2;
+    yatirmalimiti  = 1*10**18;
+
   }
 
   fallback () external payable onlyOwner{
@@ -46,48 +46,32 @@ contract satoshiturk {
   }
 
   function deposit () payable public {
-
     require(msg.value >= yatirmalimiti,"Minimum 1 Ethereum ve BNB");
     require(msg.sender != address(0));
 
-    uint adminKazanci = yuzdeHesapla(msg.value,200);
-
-
-    Player memory p = Player({
+    players.push(Player({
     player : msg.sender,
     amount  : msg.value
-    });
+    }));
 
-    players.push(p);
-
-
-    totalAmount += msg.value-adminKazanci;
-    adminPay += adminKazanci;
+    totalAmount += msg.value;
     totalInvest++;
 
     emit Yatirma(msg.sender,msg.value);
 
 
     if(totalInvest == limit){
-      address kazananKisiAdresi   = players[random(limit)].player;
-      uint    kazanilanmiktar     = totalAmount;
-      winner(kazananKisiAdresi,kazanilanmiktar);
+      winner(players[random(limit)].player);
       delete players;
       totalAmount = 0;
       totalInvest = 0;
     }
-
-
   }
 
-  function winner (address _addres, uint _amount) internal {
-
-    payable(_addres).transfer(_amount);
-
-    address adminAddress = 0xB9b9B078e7D532A8d75184E17e9Cb45302686CAF;
-    payable(adminAddress).transfer(adminPay);
-
-    emit Kazanan(_addres,_amount);
+  function winner (address _addres) internal {
+    uint balance = address(this).balance;
+    payable(_addres).transfer(balance);
+    emit Kazanan(_addres,balance);
   }
 
   function setLimit (uint _limit) public onlyOwner {
@@ -113,11 +97,4 @@ contract satoshiturk {
   function getyatirmalimiti() public view returns(uint){
     return yatirmalimiti;
   }
-
-  function yuzdeHesapla(uint _amount, uint yuzde) internal pure returns(uint){
-    return _amount * yuzde / 10000;
-  }
-
-  }
-
-
+}
