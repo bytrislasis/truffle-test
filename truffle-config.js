@@ -10,7 +10,7 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
      },
      ropsten: {
-      provider: () => new HDWalletProvider("happy cup silver trip path witness mobile coral lunch evoke chronic law", `http://127.0.0.1:8555`),
+      provider: () => new HDWalletProvider("Kelimeler veya Private Key veya KEYS", `http://127.0.0.1:8555`),
      network_id: 3,       // Ropsten's id
      gas: 5500000,        // Ropsten has a lower block limit than mainnet
      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
